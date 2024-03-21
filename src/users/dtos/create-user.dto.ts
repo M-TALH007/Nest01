@@ -1,7 +1,10 @@
 // src/users/dtos/create-user.dto.ts
 
 export class CreateUserDto {
-    readonly name: string;
-    readonly age: number;
+  name: string;
+  age: number;
+  cnic: number;
+  email: string;
+  password: string;
   }
   

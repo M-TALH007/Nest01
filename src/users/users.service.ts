@@ -42,4 +42,15 @@ export class UsersService {
     }
     return "user deleted successfully"
   }
+  async deleteAllUsers(): Promise<any> {
+    return this.userModel.deleteMany({}).exec();
+  }
+
+
+  async findUserCredientials(email: string, password: string): Promise<User | null> {
+    const user = await this.userModel.findOne({ email, password }).exec();
+    return user;
+  }
+  
+
 }
