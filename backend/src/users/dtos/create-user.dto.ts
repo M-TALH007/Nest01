@@ -2,7 +2,6 @@
 
 export class CreateUserDto {
   name: string;
-  age: number;
   cnic: number;
   email: string;
   password: string;

@@ -11,7 +11,7 @@ import { promises } from 'dns';
 export class UsersController {
   constructor(private readonly usersService: UsersService,private readonly authService:AuthService) {}
 
-  @Post()
+  @Post('signUp')
   async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     const createdUser = await this.usersService.create(createUserDto);
     return createdUser;
