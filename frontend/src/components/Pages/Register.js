@@ -1,18 +1,16 @@
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
 export const Register = () => {
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
     cnic: "",
   });
-
- 
-
-
-  const [errors, setErrors] = useState({});
-  const [isRegistered, setIsRegistered] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -24,37 +22,39 @@ export const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      setIsRegistered(true);
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        cnic: "",
+      });
+      toast.success("User registered successfully!", { autoClose: 2000 });
     } else {
       console.log("Form is invalid");
     }
 
-
-    const res = await fetch('http://localhost:4000/users/signUp', {
+    
+    const requestOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
-    });
+    };
 
-    const data = await res.json();
-    console.log(data)
-
-
-    fetch('http://localhost:4000/users/')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log('GET request successful:', data);
-  })
-  .catch(error => {
-    console.error('There was a problem with the GET request:', error);
-  });
+    fetch('http://localhost:4000/users/signUp', requestOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('POST request successful:', data);
+      })
+      .catch(error => {
+        console.error('There was a problem with the POST request:', error);
+      });
   };
 
   const validateForm = () => {
@@ -62,9 +62,9 @@ export const Register = () => {
     let formIsValid = true;
 
     // Validate full name
-    if (!formData.fullName.trim()) {
+    if (!formData.name.trim()) {
       formIsValid = false;
-      errors["fullName"] = "Full Name is required";
+      errors["name"] = "Full Name is required";
     }
 
     // Validate email
@@ -96,11 +96,6 @@ export const Register = () => {
     return formIsValid;
   };
 
-  if (isRegistered) {
-    // Redirect to Dashboard upon successful registration
-    return <Dashboard />;
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -113,19 +108,20 @@ export const Register = () => {
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="fullName" className="sr-only">
+              <label htmlFor="name" className="sr-only">
                 Full Name
               </label>
               <input
-                id="fullName"
-                name="fullName"
+                id="name"
+                name="name"
                 type="text"
                 required
+                value={formData.name}
+                onChange={handleChange}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Full Name"
-                onChange={handleChange}
               />
-              <span className="text-red-500">{errors["fullName"]}</span>
+              <span className="text-red-500">{errors["name"]}</span>
             </div>
             <div>
               <label htmlFor="email" className="sr-only">
@@ -136,9 +132,10 @@ export const Register = () => {
                 name="email"
                 type="email"
                 required
+                value={formData.email}
+                onChange={handleChange}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
-                onChange={handleChange}
               />
               <span className="text-red-500">{errors["email"]}</span>
             </div>
@@ -151,9 +148,10 @@ export const Register = () => {
                 name="password"
                 type="password"
                 required
+                value={formData.password}
+                onChange={handleChange}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
-                onChange={handleChange}
               />
               <span className="text-red-500">{errors["password"]}</span>
             </div>
@@ -166,11 +164,12 @@ export const Register = () => {
                 name="cnic"
                 type="text"
                 required
+                value={formData.cnic}
+                onChange={handleChange}
                 pattern="[0-9]{5}-[0-9]{7}-[0-9]{1}"
                 maxLength="15"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="CNIC (e.g., 1234512345671)"
-                onChange={handleChange}
               />
               <span className="text-red-500">{errors["cnic"]}</span>
             </div>
@@ -185,13 +184,14 @@ export const Register = () => {
             </button>
           </div>
         </form>
+        <div className="text-sm">
+          <p className="text-center">Already have an account?{"  "} <Link to="/Login" className="font-medium text-blue-600 hover:text-blue-500">Loign page</Link></p>
+        </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        style={{ marginTop: "4rem" }} // Adjust this value as needed
+      />
     </div>
   );
 };
-
-const Dashboard = () => {
-  return <div>Dashboard</div>;
-};
-
-

@@ -25,14 +25,14 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: CreateUserDto): Promise<String> {
+  async update(id: string, updateUserDto: CreateUserDto): Promise<User> {
     const updatedUser = await this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
       .exec();
     if (!updatedUser) {
       throw new NotFoundException('User not found');
     }
-    return 'user updated succesfully';
+    return updatedUser;
   }
 
   async remove(id: string): Promise<string> {

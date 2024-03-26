@@ -5,5 +5,9 @@ export class CreateUserDto {
   cnic: number;
   email: string;
   password: string;
+  age : number;
+  pic : string;
+  hobbies : string;
+  interests: string;
   }
   

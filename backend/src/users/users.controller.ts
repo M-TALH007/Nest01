@@ -22,16 +22,17 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @UseGuards(AuthGuard('local'))
+  // @UseGuards(AuthGuard('local'))
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<string> {
-     this.usersService.findOne(id);
-     return 'this is private'
+  async findOne(@Param('id') id: string): Promise<User> {
+   const user = await  this.usersService.findOne(id);
+     return user;
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: CreateUserDto): Promise<String> {
-    return this.usersService.update(id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: CreateUserDto): Promise<User> {
+    const user = await this.usersService.update(id, updateUserDto);
+    return user;
   }
 
   @Delete(':id')
@@ -48,11 +49,15 @@ export class UsersController {
   @Post('login')
   async login(@Body() body: { email: string; password: string }):Promise<any> {
     const { email, password } = body;
+    // console.log('body is' , body);
+    
     const user = await this.usersService.findUserCredientials(email, password);
 
+    // console.log(user);
+    
     if (user) {
-      const token = await this.authService.generateToken(email,password);
-      return { name:user.name, token };
+      const token = await this.authService.generateToken(user.id, user.email);
+      return { token };
     } else {
       throw new UnauthorizedException('Invalid credentials');
     }

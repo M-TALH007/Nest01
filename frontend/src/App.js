@@ -5,9 +5,10 @@ import { Home } from "./components/Pages/Home";
 import { DashBoard } from "./components/Pages/Dashboard";
 import {Login} from "./components/Pages/Login"
 import { Register } from "./components/Pages/Register";
-import { About } from "./components/Pages/About";
+import  { Detail }  from './components/Pages/Detail'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EditProfile from "./components/Pages/edit-profile";
 
 function App() {
   return (
@@ -20,9 +21,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/Dashboard" element={<DashBoard />} />
-            <Route path="/About" element={<About />} />
+            <Route path="/detail" element={< Detail />} />
             <Route path="/Login" element={<Login />} />
             <Route path="/Register" element={<Register />} />
+            <Route path="/edit-profile" element={< EditProfile />} />
           </Routes>
         </div>
       </Router>

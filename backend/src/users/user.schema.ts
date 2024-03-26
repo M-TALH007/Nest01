@@ -1,20 +1,23 @@
-// src/users/user.schema.ts
-
 import * as mongoose from 'mongoose';
 
 export const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // Name is required
-  age: { type: Number, required: true }, // Age is required
-  cnic: { type: Number, required: true, unique: true }, // CNIC is required and unique
-  email: { type: String, required: true, unique: true }, // Email is required and unique
-  password: { type: String, required: true }, // Password is required
+  name: { type: String, required: true }, 
+  age: { type: Number }, 
+  cnic: { type: String, required: true, unique: true }, 
+  email: { type: String, required: true, unique: true }, 
+  password: { type: String, required: true },
+  pic: { type: String }, 
+  hobbies: { type: String }, 
+  interests: { type: String }, 
 });
 
 export interface User extends mongoose.Document {
   name: string;
-  age: number;
-  cnic: number;
+  age?: number; 
+  cnic: string;
   email: string;
   password: string;
+  pic?: string;
+  hobbies?: string;
+  interests?: string;
 }
-
