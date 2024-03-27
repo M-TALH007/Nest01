@@ -61,13 +61,13 @@ export const Register = () => {
     let errors = {};
     let formIsValid = true;
 
-    // Validate full name
+
     if (!formData.name.trim()) {
       formIsValid = false;
       errors["name"] = "Full Name is required";
     }
 
-    // Validate email
+
     if (!formData.email.trim()) {
       formIsValid = false;
       errors["email"] = "Email is required";
@@ -76,13 +76,12 @@ export const Register = () => {
       errors["email"] = "Invalid email address";
     }
 
-    // Validate password
+
     if (!formData.password.trim()) {
       formIsValid = false;
       errors["password"] = "Password is required";
     }
 
-    // Validate CNIC
     if (!formData.cnic.trim()) {
       formIsValid = false;
       errors["cnic"] = "CNIC is required";

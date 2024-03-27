@@ -1,11 +1,12 @@
 // src/users/user.controller.ts
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, UnauthorizedException, UploadedFile, UseInterceptors  } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from './user.schema';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
-import { promises } from 'dns';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Controller('users')
 export class UsersController {
@@ -70,4 +71,8 @@ export class UsersController {
     return 'protected';
   }
 
+
+
 }
+
+

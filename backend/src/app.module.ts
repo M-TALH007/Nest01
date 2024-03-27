@@ -11,7 +11,7 @@ import { UsersModule } from './users/users.module';
   imports: [
     MongooseModule.forRoot('mongodb://127.0.0.1:27017/nest01'), 
     AuthModule,
-    UsersModule
+    UsersModule,
   ],
   controllers: [],
   providers: [],

@@ -40,6 +40,17 @@ function NavBar() {
                 Home
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink
+                exact
+                to="/About"
+                activeClassName="active"
+                className="nav-links"
+                onClick={handleClick}
+              >
+                About
+              </NavLink>
+            </li>
             {isAuthenticated() && (
               <li className="nav-item">
                 <NavLink

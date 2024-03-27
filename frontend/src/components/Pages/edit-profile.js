@@ -2,32 +2,17 @@ import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-const getToken = () => {
-  const token = localStorage.getItem('user');
-  if (!token) {
-    window.location.href = '/login';
-    return null;
-  }
-
-  const arrayToken = token.split('.');
-  const tokenPayload = JSON.parse(atob(arrayToken[1]));
-  const userId = tokenPayload.id;
-
-  const currentTimestamp = Math.floor(Date.now() / 1000);
-  if (tokenPayload.exp && tokenPayload.exp < currentTimestamp) {
-    localStorage.removeItem('user'); 
-    window.location.href = '/login';
-    return null;
-  }
-
-  return userId;
-}
-
-
 const EditProfile = () => {
+
+  const getToken=()=>{
+    const token = localStorage.getItem('user');
+    const arrayToken = token.split('.');
+    const tokenPayload = JSON.parse(atob(arrayToken[1]));
+    const userId = tokenPayload.id;
+    return userId;
+    }
   const [profile, setProfile] = useState({
-    profilePic: null,
+    pic: null,
     age: "",
     hobbies: "",
     interests: ""
@@ -35,10 +20,7 @@ const EditProfile = () => {
 
   useEffect(() => {
 
-
     const userId = getToken();
-    
-
     fetch(`http://localhost:4000/users/${userId}`)
       .then((response) => {
         if (!response.ok) {
@@ -49,8 +31,11 @@ const EditProfile = () => {
       .then((userData) => {
         setProfile({
           ...profile,
-          profilePic: userData.profilePic || "",
-          age: userData.age || "",
+          name : userData.name||"",
+          email : userData.email||"",
+          password : userData.password||"",
+          age : userData.age||"",
+          pic: userData.pic || null,
           hobbies: userData.hobbies || "",
           interests: userData.interests || ""
         });
@@ -58,7 +43,7 @@ const EditProfile = () => {
       .catch((error) => {
         console.error("Error fetching user details:", error);
       });
-  }, []); 
+  }, [profile]); 
 
   const handleChange = (e) => {
     // const { name, value } = e.target;
@@ -69,23 +54,22 @@ const EditProfile = () => {
   };
 
   const handleImageChange = (e) => {
+
     const file = e.target.files[0];
+    console.log(file);
     setProfile({
       ...profile,
-      profilePic: file
+      pic: file
     });
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
     const userId = getToken();
-
     const requestOptions = {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          
+          'Content-Type': 'multipart/form-data',
         },
         body: JSON.stringify(profile)
       };
@@ -100,10 +84,11 @@ const EditProfile = () => {
       })
       .then(data => {
         console.log('User profile updated successfully:', data);
+        
         toast.success("User updated successfully!", { autoClose: 2000 });
-        setTimeout(() => {
-          window.location.href = '/detail'; 
-      }, 2000);
+        setTimeout(()=>{
+         window.location.href = "/Dashboard";
+        },3000)
       })
       .catch(error => {
         console.error('Error updating user profile:', error);
@@ -111,23 +96,53 @@ const EditProfile = () => {
   
   };
 
+  
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-xl">
       <h2 className="text-3xl font-semibold mb-4 text-center">Edit Profile</h2>
       <form onSubmit={handleFormSubmit}>
-        {/* Profile Picture */}
         <div className="mb-4">
-          <label htmlFor="profile-pic" className="block text-sm text-gray-600 mb-2">
-            Profile Picture:
+          <label htmlFor="name" className="block text-sm text-gray-600 mb-2">
+            Name:
           </label>
           <input
-            type="file"
-            id="pic"
-            accept="image/*"
-            onChange={handleImageChange}
+            type="text"
+            id="name"
+            name="name"
+            value={profile.name}
+            onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
         </div>
+        {/* Email */}
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm text-gray-600 mb-2">
+            Email:
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={profile.email}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        {/* Password */}
+        <div className="mb-4">
+          <label htmlFor="password" className="block text-sm text-gray-600 mb-2">
+            Password:
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={profile.password}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+        </div>
+
         {/* Age */}
         <div className="mb-4">
           <label htmlFor="age" className="block text-sm text-gray-600 mb-2">
@@ -142,6 +157,7 @@ const EditProfile = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
         </div>
+        
         {/* Hobbies */}
         <div className="mb-4">
           <label htmlFor="hobbies" className="block text-sm text-gray-600 mb-2">
@@ -159,33 +175,45 @@ const EditProfile = () => {
         {/* Interests */}
         <div className="mb-4">
           <label htmlFor="interests" className="block text-sm text-gray-600 mb-2">
-Interests:
-</label>
-<input
-         type="text"
-         id="interests"
-         name="interests"
-         value={profile.interests}
-         onChange={handleChange}
-         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-       />
-</div>
-{/* Submit Button */}
-<div className="mb-4">
-<button
-         type="submit"
-         className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
-       >
-Save
-</button>
-</div>
-</form>
-<ToastContainer
+            Interests:
+          </label>
+          <input
+            type="text"
+            id="interests"
+            name="interests"
+            value={profile.interests}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="pic" className="block text-sm text-gray-600 mb-2">
+            Profile Picture:
+          </label>
+          <input
+            type="file"
+            id="pic"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        {/* Submit Button */}
+        <div className="mb-4">
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+      <ToastContainer
         position="top-right"
         style={{ marginTop: "4rem" }} // Adjust this value as needed
       />
-</div>
-);
+    </div>
+  );
 };
 
 export default EditProfile;
