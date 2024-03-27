@@ -1,7 +1,29 @@
 import React, { useState, useEffect } from "react";
-// import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+
+const getToken = () => {
+  const token = localStorage.getItem('user');
+  if (!token) {
+    window.location.href = '/login';
+    return null;
+  }
+
+  const arrayToken = token.split('.');
+  const tokenPayload = JSON.parse(atob(arrayToken[1]));
+  const userId = tokenPayload.id;
+
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  if (tokenPayload.exp && tokenPayload.exp < currentTimestamp) {
+    localStorage.removeItem('user'); 
+    window.location.href = '/login';
+    return null;
+  }
+
+  return userId;
+}
+
 
 const EditProfile = () => {
   const [profile, setProfile] = useState({
@@ -13,10 +35,9 @@ const EditProfile = () => {
 
   useEffect(() => {
 
-    const token = localStorage.getItem('user');
-    const arrayToken = token.split('.');
-    const tokenPayload = JSON.parse(atob(arrayToken[1]));
-    const userId = tokenPayload.id;
+
+    const userId = getToken();
+    
 
     fetch(`http://localhost:4000/users/${userId}`)
       .then((response) => {
@@ -26,7 +47,6 @@ const EditProfile = () => {
         return response.json();
       })
       .then((userData) => {
-        console.log('new data is appended===========================');
         setProfile({
           ...profile,
           profilePic: userData.profilePic || "",
@@ -59,16 +79,13 @@ const EditProfile = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('user');
-    const arrayToken = token.split('.');
-    const tokenPayload = JSON.parse(atob(arrayToken[1]));
-    const userId = tokenPayload.id;
+    const userId = getToken();
 
     const requestOptions = {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          
         },
         body: JSON.stringify(profile)
       };
@@ -83,8 +100,10 @@ const EditProfile = () => {
       })
       .then(data => {
         console.log('User profile updated successfully:', data);
-        // window.location.href = "/detail";
         toast.success("User updated successfully!", { autoClose: 2000 });
+        setTimeout(() => {
+          window.location.href = '/detail'; 
+      }, 2000);
       })
       .catch(error => {
         console.error('Error updating user profile:', error);

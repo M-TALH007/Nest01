@@ -1,16 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const DashBoard = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: "John Doe", email: "john@example.com" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com" },
-  ]);
-
+  const [users, setUsers] = useState([]);
   const [editUserId, setEditUserId] = useState(null);
   const [newUser, setNewUser] = useState({ name: "", email: "" });
 
+  useEffect(() => {
+    fetch(`http://localhost:4000/users`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch users");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setUsers(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching users", error);
+      });
+  }, []);
+
   const deleteUser = (userId) => {
-    setUsers(users.filter((user) => user.id !== userId));
+    fetch(`http://localhost:4000/users/${userId}`, {
+      method: 'DELETE',
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete user");
+        }
+        setUsers(users.filter((user) => user.id !== userId));
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+      });
   };
 
   const handleEdit = (userId) => {
@@ -20,16 +43,45 @@ export const DashBoard = () => {
   };
 
   const handleSave = () => {
-    // Add functionality to save edited user
-    console.log("Save edited user:", newUser);
-    setEditUserId(null);
+    fetch(`http://localhost:4000/users/${editUserId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newUser),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to save user");
+        }
+        setEditUserId(null);
+      })
+      .catch((error) => {
+        console.error("Error saving user:", error);
+      });
   };
 
   const handleAddUser = () => {
-    // Add functionality to add new user
-    const id = Math.max(...users.map((user) => user.id)) + 1;
-    setUsers([...users, { id, ...newUser }]);
-    setNewUser({ name: "", email: "" });
+    fetch(`http://localhost:4000/users/signUp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newUser),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to add user");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setUsers([...users, data]);
+        setNewUser({ name: "", email: "" });
+      })
+      .catch((error) => {
+        console.error("Error adding user:", error);
+      });
   };
 
   const handleChange = (e) => {
