@@ -1,24 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import "./NavBar.css";
 import { HamburgetMenuClose, HamburgetMenuOpen } from "./Icons";
+import "./NavBar.css";
 
 function NavBar() {
   const [click, setClick] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const isAuthenticated = () => {
-    // Implement your authentication logic here
+  useEffect(() => {
     const token = localStorage.getItem('user');
-    return !!token; // Returns true if token exists, false otherwise
-  };
+    if (token) {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]))
+      const userId = tokenPayload.id;
+      fetch(`http://localhost:4000/users/${userId}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch user details");
+        }
+        return response.json();
+      })
+      .then((userData) => {
+        if (userData) {
+          setAuthenticated(true);
+          setIsAdmin(userData.role === "admin");
+        } else {
+          setAuthenticated(false);
+          setIsAdmin(false);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user details:", error);
+      });
+    } else {
+      setAuthenticated(false);
+      setIsAdmin(false);
+    }
+  }, []);
+  
 
   const handleClick = () => setClick(!click);
 
   const handleLogout = () => {
-    // Implement logout logic here (clear token, redirect to login page, etc.)
-    localStorage.removeItem('user');
-    // Redirect to the login page or any other desired page
-    window.location.href = '/login';
+    localStorage.removeItem("user");
+    window.location.href = "/login";
   };
 
   return (
@@ -51,35 +76,39 @@ function NavBar() {
                 About
               </NavLink>
             </li>
-            {isAuthenticated() && (
-              <li className="nav-item">
-                <NavLink
-                  exact
-                  to="/detail"
-                  activeClassName="active"
-                  className="nav-links"
-                  onClick={handleClick}
-                >
-                  User Details
-                </NavLink>
-              </li>
+            {authenticated && (
+              <>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/detail"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    User Details
+                  </NavLink>
+                </li>
+                {isAdmin && (
+                  <li className="nav-item">
+                    <NavLink
+                      exact
+                      to="/Dashboard"
+                      activeClassName="active"
+                      className="nav-links"
+                      onClick={handleClick}
+                    >
+                      Dashboard
+                    </NavLink>
+                  </li>
+                )}
+              </>
             )}
-            <li className="nav-item">
-              <NavLink
-                exact
-                to="/Dashboard"
-                activeClassName="active"
-                className="nav-links"
-                onClick={handleClick}
-              >
-                DashBoard
-              </NavLink>
-            </li>
           </ul>
         </div>
         <div className="nav-actions">
           <ul className="nav-menu">
-            {!isAuthenticated() ? (
+            {!authenticated ? (
               <>
                 <li className="nav-item">
                   <NavLink
@@ -116,11 +145,11 @@ function NavBar() {
         <div className="nav-icon" onClick={handleClick}>
           {click ? (
             <span className="icon">
-              <HamburgetMenuOpen />
+              <HamburgetMenuClose />
             </span>
           ) : (
             <span className="icon">
-              <HamburgetMenuClose />
+              <HamburgetMenuOpen />
             </span>
           )}
         </div>

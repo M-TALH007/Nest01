@@ -11,6 +11,8 @@ const EditProfile = () => {
     const userId = tokenPayload.id;
     return userId;
     }
+
+
   const [profile, setProfile] = useState({
     pic: null,
     age: "",
@@ -43,7 +45,7 @@ const EditProfile = () => {
       .catch((error) => {
         console.error("Error fetching user details:", error);
       });
-  }, [profile]); 
+  }, []); 
 
   const handleChange = (e) => {
     // const { name, value } = e.target;
@@ -69,7 +71,7 @@ const EditProfile = () => {
     const requestOptions = {
         method: 'PUT',
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(profile)
       };
@@ -84,16 +86,23 @@ const EditProfile = () => {
       })
       .then(data => {
         console.log('User profile updated successfully:', data);
-        
         toast.success("User updated successfully!", { autoClose: 2000 });
-        setTimeout(()=>{
-         window.location.href = "/Dashboard";
-        },3000)
+
+        if (data && data.role === 'admin') {
+          setTimeout(() => {
+            window.location.href = "/Dashboard"; // Redirect to Dashboard for admin
+          }, 3000);
+        } else {
+          setTimeout(() => {
+            window.location.href = "/detail"; // Redirect to User Detail for non-admin users
+          }, 3000);
+        }
       })
       .catch(error => {
         console.error('Error updating user profile:', error);
       });
-  
+    
+     
   };
 
   

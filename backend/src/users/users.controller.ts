@@ -5,8 +5,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from './user.schema';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+
 
 @Controller('users')
 export class UsersController {
@@ -14,6 +13,7 @@ export class UsersController {
 
   @Post('signUp')
   async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    console.log(createUserDto);
     const createdUser = await this.usersService.create(createUserDto);
     return createdUser;
   }

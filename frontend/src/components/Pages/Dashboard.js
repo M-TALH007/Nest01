@@ -5,19 +5,21 @@ export const DashBoard = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/users`)
-      .then((response) => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/users`);
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
-        return response.json();
-      })
-      .then((data) => {
+        const data = await response.json();
         setUsers(data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching users", error);
-      });
+        handleLogout();
+      }
+    };
+
+    fetchUsers();
   }, [users]);
 
   const deleteUser = async (userId) => {
@@ -33,8 +35,12 @@ export const DashBoard = () => {
       console.error("Error deleting user:", error);
     }
   };
-  
-  
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">

@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
 
-export const Register = () => {
+ export const Register = () => {
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    cnic: "",
+    name: '',
+    email: '',
+    password: '',
+    cnic: '',
+    role: false,
   });
+
 
   const handleChange = (e) => {
     setFormData({
@@ -19,27 +20,27 @@ export const Register = () => {
     });
   };
 
+  const handleCheckboxChange = (e) => {
+    setFormData({
+      ...formData,
+      role: e.target.checked
+    });
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        cnic: "",
-      });
-      toast.success("User registered successfully!", { autoClose: 2000 });
-    } else {
-      console.log("Form is invalid");
-    }
-
     
+
+    const requestData = {
+      ...formData,
+      role: formData.role ? 'admin' : 'user' 
+    };
+
     const requestOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(requestData)
     };
 
     fetch('http://localhost:4000/users/signUp', requestOptions)
@@ -55,8 +56,23 @@ export const Register = () => {
       .catch(error => {
         console.error('There was a problem with the POST request:', error);
       });
+
+      if (validateForm()) {
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          cnic: "",
+          role: false
+        });
+        toast.success("User registered successfully!", { autoClose: 2000 });
+      } else {
+        console.log("Form is invalid");
+      }
+  
   };
 
+  
   const validateForm = () => {
     let errors = {};
     let formIsValid = true;
@@ -94,103 +110,97 @@ export const Register = () => {
     setErrors(errors);
     return formIsValid;
   };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create an account
-          </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <input type="hidden" name="remember" defaultValue="true" />
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="name" className="sr-only">
-                Full Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Full Name"
-              />
-              <span className="text-red-500">{errors["name"]}</span>
-            </div>
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
-              <span className="text-red-500">{errors["email"]}</span>
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-              <span className="text-red-500">{errors["password"]}</span>
-            </div>
-            <div>
-              <label htmlFor="cnic" className="sr-only">
-                CNIC
-              </label>
-              <input
-                id="cnic"
-                name="cnic"
-                type="text"
-                required
-                value={formData.cnic}
-                onChange={handleChange}
-                pattern="[0-9]{5}-[0-9]{7}-[0-9]{1}"
-                maxLength="15"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="CNIC (e.g., 1234512345671)"
-              />
-              <span className="text-red-500">{errors["cnic"]}</span>
-            </div>
+    <section className="bg-gray-0 dark:bg-gray-00">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        
+        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+              Create an account
+            </h1>
+            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your name</label>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Your name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="name@company.com"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="••••••••"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="cnic" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CNIC</label>
+                <input
+                  type="text"
+                  name="cnic"
+                  id="cnic"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="CNIC (e.g., 1234-51234567-1)"
+                  required
+                  value={formData.cnic}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex items-start">
+                <input
+                  type="checkbox"
+                  id="isAdmin"
+                  name="isAdmin"
+                  checked={formData.isAdmin}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
+                />
+                <label htmlFor="isAdmin" className="ml-2 text-sm font-medium text-gray-900 dark:text-white">Register as admin</label>
+              </div>
+              <button
+                type="submit"
+                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              >
+                Create an account
+              </button>
+              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                Already have an account? <a href="/Login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
+              </p>
+            </form>
           </div>
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Register
-            </button>
-          </div>
-        </form>
-        <div className="text-sm">
-          <p className="text-center">Already have an account?{"  "} <Link to="/Login" className="font-medium text-blue-600 hover:text-blue-500">Loign page</Link></p>
         </div>
-      </div>
-      <ToastContainer
+        <ToastContainer
         position="top-right"
-        style={{ marginTop: "4rem" }} // Adjust this value as needed
+        style={{ marginTop: "4rem" }} 
       />
-    </div>
+      </div>
+    </section>
   );
 };
+

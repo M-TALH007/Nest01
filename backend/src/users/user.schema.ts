@@ -9,6 +9,7 @@ export const UserSchema = new mongoose.Schema({
   pic: { type: String }, 
   hobbies: { type: String }, 
   interests: { type: String }, 
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }
 });
 
 export interface User extends mongoose.Document {
@@ -20,4 +21,5 @@ export interface User extends mongoose.Document {
   pic?: string;
   hobbies?: string;
   interests?: string;
+  role : string;
 }
