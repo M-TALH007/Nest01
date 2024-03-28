@@ -1,36 +1,15 @@
-# mongo db connection 
-# Crud operation done with with mongo db 
-# Done JWT Authentication
-## Description
-## Installation
-
-```bash
-$ npm install
-```
+# This is my first aPP in which i use react for frontend and use Nest js for backend
 
 ## Running the app
 
-```bash
-# development
-$ npm run start
+1. first clone in your machine then cd first App
+2. cd frontend
+3. npm install
+4. npm start
 
-# watch mode
-$ npm run start:dev
+5. open second terminal ctrl+shift+`
+6. cd backend
+7. npm install
+8. npm run start:dev
 
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
+go to the local host 3000
